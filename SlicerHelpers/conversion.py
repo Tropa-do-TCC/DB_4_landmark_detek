@@ -16,7 +16,7 @@ def convert_ras_to_ijk(main_volume_label: str, landmarks_list_label: str = "land
         volume_node.GetRASToIJKMatrix(volume_RasToIjk)
         point_Ijk = [0, 0, 0, 1]
         volume_RasToIjk.MultiplyPoint(np.append(point_VolumeRas, 1.0), point_Ijk)
-        point_Ijk = [int(ceil(c)) for c in point_Ijk[0:3]]
+        point_Ijk = [ceil(c) for c in point_Ijk[0:3]]
         # Print output
         landmark_label = landmarks_nodes.GetNthMarkupLabel(landmark_index)
         print(f"{landmark_label}: {point_Ijk}")
