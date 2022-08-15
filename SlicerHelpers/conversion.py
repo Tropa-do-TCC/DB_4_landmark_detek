@@ -1,8 +1,8 @@
 def convert_ras_to_ijk(main_volume_label: str, landmarks_list_label: str = "landmarks"):
     import numpy as np
     from math import ceil
-    volume_node = getNode(main_volume_label)  # main volume label
-    landmarks_nodes = getNode(landmarks_list_label)  # landmarks list label
+    volume_node = getNode(main_volume_label)
+    landmarks_nodes = getNode(landmarks_list_label)
     landmarks_amount = landmarks_nodes.GetNumberOfMarkups() 
     point_Ras = [0, 0, 0, 1]
     for landmark_index in range(landmarks_amount):
