@@ -6,10 +6,8 @@ def convert_ras_to_ijk(main_volume_label: str, landmarks_list_label: str = "land
     point_Ras = [0, 0, 0, 1]
     # Create table to store coordinates
     table_node = slicer.vtkMRMLTableNode()
-    column = table_node.AddColumn()
-    column.SetName('ras')
-    column = table_node.AddColumn()
-    column.SetName('ijk')
+    table_node.AddColumn().SetName('ras')
+    table_node.AddColumn().SetName('ijk')
     # Get all landmarks in RAS coordinates, convert to IJK and store both in the table
     for landmark_index in range(landmarks_amount):
         landmarks_nodes.GetNthFiducialWorldCoordinates(landmark_index, point_Ras)
