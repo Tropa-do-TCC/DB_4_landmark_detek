@@ -4,6 +4,13 @@ def convert_ras_to_ijk(main_volume_label: str, landmarks_list_label: str = "land
     landmarks_nodes = getNode(landmarks_list_label)
     landmarks_amount = landmarks_nodes.GetNumberOfMarkups() 
     point_Ras = [0, 0, 0, 1]
+    # Create table to store coordinates
+    table_node = slicer.vtkMRMLTableNode()
+    column = table_node.AddColumn()
+    column.SetName('ras')
+    column = table_node.AddColumn()
+    column.SetName('ijk')
+    # Get all landmarks in RAS coordinates, convert to IJK and store both in the table
     for landmark_index in range(landmarks_amount):
         landmarks_nodes.GetNthFiducialWorldCoordinates(landmark_index, point_Ras)
         # If volume node is transformed, apply that transform to get volume's RAS coordinates
@@ -16,9 +23,16 @@ def convert_ras_to_ijk(main_volume_label: str, landmarks_list_label: str = "land
         point_Ijk = [0, 0, 0, 1]
         volume_RasToIjk.MultiplyPoint(np.append(point_VolumeRas, 1.0), point_Ijk)
         point_Ijk = [round(c) for c in point_Ijk[0:3]]
+        # Add coordinates to table
+        table_node.AddEmptyRow()
+        table_node.SetCellText(landmark_index, 0, ','.join(map(str, point_Ras)))
+        table_node.SetCellText(landmark_index, 1, ','.join(map(str, point_Ijk)))
         # Print output
         landmark_label = landmarks_nodes.GetNthMarkupLabel(landmark_index)
         print(f"{landmark_label}: {point_Ijk}")
+    # Add the table to the scene
+    table_node.SetName("Landmarks table")
+    slicer.mrmlScene.AddNode(table_node)
 
 def convert_ijk_to_ras(main_volume_label: str, landmark_in_ijk: tuple):
     import numpy as np
