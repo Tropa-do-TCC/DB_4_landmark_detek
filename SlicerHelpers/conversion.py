@@ -1,38 +1,24 @@
-def convert_ras_to_ijk(main_volume_label: str, landmarks_list_label: str = "landmarks"):
+def convert_ras_to_ijk(main_volume_label: str='cts', landmarks_list_label: str = "landmarks"):
     import numpy as np
     volume_node = getNode(main_volume_label)
     landmarks_nodes = getNode(landmarks_list_label)
     landmarks_amount = landmarks_nodes.GetNumberOfMarkups() 
     point_Ras = [0, 0, 0, 1]
-    # Create table to store coordinates
-    table_node = slicer.vtkMRMLTableNode()
-    table_node.AddColumn().SetName('ras')
-    table_node.AddColumn().SetName('ijk')
-    # Get all landmarks in RAS coordinates, convert to IJK and store both in the table
     for landmark_index in range(landmarks_amount):
         landmarks_nodes.GetNthFiducialWorldCoordinates(landmark_index, point_Ras)
-        # If volume node is transformed, apply that transform to get volume's RAS coordinates
         transformRasToVolumeRas = vtk.vtkGeneralTransform()
         slicer.vtkMRMLTransformNode.GetTransformBetweenNodes(None, volume_node.GetParentTransformNode(), transformRasToVolumeRas)
         point_VolumeRas = transformRasToVolumeRas.TransformPoint(point_Ras[0:3])
-        # Get voxel coordinates from physical coordinates
         volume_RasToIjk = vtk.vtkMatrix4x4()
         volume_node.GetRASToIJKMatrix(volume_RasToIjk)
         point_Ijk = [0, 0, 0, 1]
         volume_RasToIjk.MultiplyPoint(np.append(point_VolumeRas, 1.0), point_Ijk)
         point_Ijk = [round(c) for c in point_Ijk[0:3]]
-        # Add coordinates to table
-        table_node.AddEmptyRow()
-        table_node.SetCellText(landmark_index, 0, ','.join(map(str, point_Ras)))
-        table_node.SetCellText(landmark_index, 1, ','.join(map(str, point_Ijk)))
-        # Print output
+        landmarks_nodes.SetNthControlPointDescription(landmark_index, ','.join(str(e) for e in point_Ijk))
         landmark_label = landmarks_nodes.GetNthMarkupLabel(landmark_index)
         print(f"{landmark_label}: {point_Ijk}")
-    # Add the table to the scene
-    table_node.SetName("Landmarks table")
-    slicer.mrmlScene.AddNode(table_node)
 
-def convert_ijk_to_ras(main_volume_label: str, landmark_in_ijk: tuple):
+def convert_ijk_to_ras(landmark_in_ijk: tuple, main_volume_label: str='cts'):
     import numpy as np
     volumeNode = getNode(main_volume_label)
     # Get physical coordinates from voxel coordinates
