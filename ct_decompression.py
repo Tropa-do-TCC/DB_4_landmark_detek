@@ -8,7 +8,6 @@ def decompress_dcm(file_path: str):
     reader.SetFileName(file_path)
 
     if not reader.Read():
-        print("test")
         sys.exit(1)
 
     change = gdcm.ImageChangeTransferSyntax()
