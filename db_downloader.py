@@ -1,3 +1,4 @@
+import os
 import zipfile
 
 import requests
@@ -26,7 +27,7 @@ def download_ct_file(ct_file_url: str, ct_file_name: str):
 
     with requests.get(ct_file_url, stream=True) as download_request:
         download_request.raise_for_status()
-        with open(ct_file_name, 'wb') as f:
+        with open(f"files/{ct_file_name}", 'wb') as f:
             for chunk in download_request.iter_content(chunk_size=8192):
                 f.write(chunk)
 
@@ -39,6 +40,7 @@ def main():
 
         download_ct_file(ct_file_url, ct_file_name)
         extract_zipped_ct(ct_file_name)
+        os.remove(ct_file_name)  # remove zip file after download
 
         print(
             f"Finished download {ct_file_name} - {ct_index + 1}/{len(ct_files_urls)}\n")
