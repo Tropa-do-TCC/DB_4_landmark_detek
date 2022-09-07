@@ -27,7 +27,7 @@ def download_ct_file(ct_file_url: str, ct_file_name: str):
 
     with requests.get(ct_file_url, stream=True) as download_request:
         download_request.raise_for_status()
-        with open(f"files/{ct_file_name}", 'wb') as f:
+        with open(ct_file_name, 'wb') as f:
             for chunk in download_request.iter_content(chunk_size=8192):
                 f.write(chunk)
 
