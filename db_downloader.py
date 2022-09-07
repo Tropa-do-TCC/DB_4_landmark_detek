@@ -37,7 +37,7 @@ def main():
     for ct_index, ct_file_url in enumerate(ct_files_urls):
         ct_file_name = ct_file_url.split("/")[-1]
 
-        # download_ct_file(ct_file_url, ct_file_name)
+        download_ct_file(ct_file_url, ct_file_name)
         extract_zipped_ct(ct_file_name)
 
         print(
